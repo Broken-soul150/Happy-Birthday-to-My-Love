@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Krishty 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .heart {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-400 via-purple-500 to-violet-600 min-h-screen flex items-center justify-center relative overflow-hidden">
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti" class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-2xl w-full mx-4 md:mx-8">
+        <div class="glass rounded-3xl shadow-2xl p-8 md:p-12 text-center border border-white/30">
+            
+            <!-- Top Hearts -->
+            <div class="flex justify-center gap-4 mb-6">
+                <span class="text-4xl heart">💖</span>
+                <span class="text-4xl heart" style="animation-delay: 0.5s;">💕</span>
+                <span class="text-4xl heart" style="animation-delay: 1s;">🌹</span>
+            </div>
+
+            <!-- Birthday Title -->
+            <h1 class="title-font text-5xl md:text-7xl font-bold text-white tracking-tight drop-shadow-lg">
+                Happy Birthday
+            </h1>
+            <p class="text-4xl md:text-5xl text-white mt-2 font-medium">
+                Krishty 💖
+            </p>
+
+            <!-- Date -->
+            <div class="inline-flex items-center gap-2 bg-white/20 text-white px-6 py-2 rounded-full text-lg mt-6">
+                <span class="text-2xl">🎂</span>
+                17th May
+            </div>
+
+            <!-- Personal Message -->
+            <div class="mt-10 text-white/95 text-lg md:text-xl leading-relaxed max-w-md mx-auto">
+                To the most beautiful, kind, and amazing girl in my world, <strong>Krishty</strong>...<br><br>
+                You make every single day feel like magic. Your smile lights up my life more than anything else. 
+                Thank you for being my best friend, my biggest cheerleader, and the love of my life.<br><br>
+                I can't wait for the day when you become <strong>Krishty Dhali</strong> — my wife, my forever partner.<br>
+                I promise to make today (and every day after) extra special for you.<br>
+                <span class="text-2xl block mt-6">I LOVE YOU SO MUCH ❤️</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="launchConfettiBurst()" 
+                        class="flex items-center justify-center gap-3 bg-white text-pink-600 hover:bg-pink-100 transition-all font-semibold text-lg px-8 py-4 rounded-2xl shadow-lg">
+                    🎉 More Confetti!
+                </button>
+                
+                <button onclick="playAgain()" 
+                        class="flex items-center justify-center gap-3 border-2 border-white text-white hover:bg-white/20 transition-all font-semibold text-lg px-8 py-4 rounded-2xl">
+                    ❤️ Send Love Again
+                </button>
+            </div>
+
+            <!-- Footer Love Note -->
+            <div class="mt-12 pt-8 border-t border-white/30 text-white/80 text-sm">
+                Made with ❤️ just for you by your boyfriend<br>
+                <span class="text-xs opacity-75">Your future husband 💍 • Open on 17th May for the full surprise ✨</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let canvas = null;
+        let ctx = null;
+        let particles = [];
+        let animationFrame = null;
+
+        class ConfettiParticle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 14 + 8;
+                this.speedX = Math.random() * 4 - 2;
+                this.speedY = Math.random() * 7 + 5;
+                this.color = ['#ff69b4', '#ff1493', '#ff00ff', '#ffd700', '#00ffcc', '#ff4500', '#00b7eb'][Math.floor(Math.random() * 7)];
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 12 - 6;
+                this.shape = Math.random() > 0.5 ? 'rect' : 'circle';
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += 0.12;
+                this.rotation += this.rotationSpeed;
+                
+                if (this.y > canvas.height + 50) {
+                    this.reset();
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                
+                if (this.shape === 'rect') {
+                    ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        function createParticles(count) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new ConfettiParticle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        function startConfetti() {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createParticles(220);
+            animate();
+        }
+
+        function launchConfettiBurst() {
+            createParticles(180);
+            canvas.style.transform = 'scale(1.03)';
+            setTimeout(() => { canvas.style.transform = 'scale(1)'; }, 120);
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function playAgain() {
+            particles = [];
+            createParticles(300);
+        }
+
+        // Main initialization
+        window.onload = function() {
+            canvas = document.getElementById('confetti');
+            ctx = canvas.getContext('2d');
+            
+            window.addEventListener('resize', resizeCanvas);
+            
+            startConfetti();
+            
+            console.log('%c🎉 Happy Birthday website for Krishty is ready! Made with love 💖', 'color: #ff69b4; font-size: 16px; font-weight: bold');
+            
+            document.addEventListener('click', () => {
+                if (Math.random() > 0.7) createParticles(30);
+            });
+        };
+    </script>
+</body>
+</html>
